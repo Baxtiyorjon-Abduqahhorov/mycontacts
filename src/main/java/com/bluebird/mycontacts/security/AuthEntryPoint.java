@@ -1,5 +1,6 @@
 package com.bluebird.mycontacts.security;
 
+import com.bluebird.mycontacts.extra.LoginResult;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,8 @@ public class AuthEntryPoint extends BasicAuthenticationEntryPoint {
         response.setHeader("WWW-Authenticate", "Basic realm=" + getRealmName());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         PrintWriter writer = response.getWriter();
-        writer.println(authException.getMessage());
+        final LoginResult loginResult = new LoginResult(false, authException.getMessage());
+        writer.println(loginResult);
     }
 
     @Override
