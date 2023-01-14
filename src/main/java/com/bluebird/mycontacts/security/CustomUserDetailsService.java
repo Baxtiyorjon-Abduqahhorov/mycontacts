@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        final Users users = usersRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("Not found"));
+        final Users users = usersRepository.findByPhone(username).orElseThrow(()->new UsernameNotFoundException("Not found"));
         final List<GrantedAuthority> authorities = users.getRoles().stream().map(roles -> new SimpleGrantedAuthority(roles.getName())).collect(Collectors.toList());
         return new User(users.getPhone(), users.getPassword(), authorities);
     }

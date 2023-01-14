@@ -52,7 +52,7 @@ public class AuthService {
             final RegisterResult registerResult = new RegisterResult(false, "Telefon raqamida faqat '+' va raqamlar ishtirok etishi shart.");
             return new ResponseEntity<>(registerResult, HttpStatus.BAD_REQUEST);
         }
-        if (usersRepository.existsByUsername(phone)){
+        if (usersRepository.existsByPhone(phone)){
             final RegisterResult registerResult = new RegisterResult(false, "Bu foydalanuvchi allaqachon ro'yhatdan o'tgan.");
             return new ResponseEntity<>(registerResult, HttpStatus.BAD_REQUEST);
         }
