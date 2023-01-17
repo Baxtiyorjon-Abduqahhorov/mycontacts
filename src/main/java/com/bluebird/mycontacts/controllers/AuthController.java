@@ -1,5 +1,7 @@
 package com.bluebird.mycontacts.controllers;
 
+import com.bluebird.mycontacts.models.LoginResult;
+import com.bluebird.mycontacts.models.RegisterResult;
 import com.bluebird.mycontacts.services.AuthService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +20,12 @@ public class AuthController {
     }
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String, Object>> register(@RequestPart String phone, @RequestPart String password) {
+    public ResponseEntity<RegisterResult> register(@RequestPart String phone, @RequestPart String password) {
         return authService.register(phone, password);
     }
 
     @PostMapping(value = "/login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String, Object>> login(@RequestPart String phone, @RequestPart String password) {
+    public ResponseEntity<LoginResult> login(@RequestPart String phone, @RequestPart String password) {
         return authService.login(phone, password);
     }
 

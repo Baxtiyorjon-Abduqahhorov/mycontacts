@@ -2,6 +2,8 @@ package com.bluebird.mycontacts.services;
 
 import com.bluebird.mycontacts.entities.Roles;
 import com.bluebird.mycontacts.entities.Users;
+import com.bluebird.mycontacts.models.LoginResult;
+import com.bluebird.mycontacts.models.RegisterResult;
 import com.bluebird.mycontacts.repositories.RolesRepository;
 import com.bluebird.mycontacts.repositories.UsersRepository;
 import com.bluebird.mycontacts.security.TokenGenerator;
@@ -15,8 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class AuthService {
@@ -39,31 +39,25 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public ResponseEntity<Map<String, Object>> register(String phone, String password) {
-        final Map<String, Object> result = new HashMap<>();
-        if (phone.length() != 13 && password.length() < 8){
-            result.put("status", false);
-            result.put("message", "Telefon raqami 13ta belgidan iborat bo'lishi kerak va parol kamida 6ta belgidan iborat bo'lishi kerak.");
+    public ResponseEntity<RegisterResult> register(String phone, String password) {
+        if (phone.length() != 13 && password.length() < 8) {
+            final RegisterResult result = new RegisterResult(false, "Telefon raqami 13ta belgidan iborat bo'lishi kerak va parol kamida 6ta belgidan iborat bo'lishi kerak.");
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
         if (phone.length() != 13) {
-            result.put("status", false);
-            result.put("message", "Telefon raqami 13ta belgidan iborat bo'lishi kerak.");
+            final RegisterResult result = new RegisterResult(false, "Telefon raqami 13ta belgidan iborat bo'lishi kerak.");
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
         if (password.length() < 8) {
-            result.put("status", false);
-            result.put("message", "Parol kamida 6ta belgidan iborat bo'lishi kerak.");
+            final RegisterResult result = new RegisterResult(false, "Parol kamida 6ta belgidan iborat bo'lishi kerak.");
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
         if (phone.matches("[0-9]+")) {
-            result.put("status", false);
-            result.put("message", "Telefon raqamida faqat '+' va raqamlar ishtirok etishi shart.");
+            final RegisterResult result = new RegisterResult(false, "Telefon raqamida faqat '+' va raqamlar ishtirok etishi shart.");
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
-        if (usersRepository.existsByPhone(phone)){
-            result.put("status", false);
-            result.put("message", "Bu foydalanuvchi allaqachon ro'yhatdan o'tgan.");
+        if (usersRepository.existsByPhone(phone)) {
+            final RegisterResult result = new RegisterResult(false, "Bu foydalanuvchi allaqachon ro'yhatdan o'tgan.");
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
         final Users users = new Users();
@@ -74,20 +68,15 @@ public class AuthService {
 
         usersRepository.save(users);
 
-        result.put("status", false);
-        result.put("message", "Foydalanuvchi ro'yhatdan o'tdi.");
+        final RegisterResult result = new RegisterResult(true, "Foydalanuvchi ro'yhatdan o'tdi.");
         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<Map<String, Object>> login(String phone, String password) {
-        final Map<String, Object> result = new HashMap<>();
+    public ResponseEntity<LoginResult> login(String phone, String password) {
         final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(phone, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         final String token = tokenGenerator.generateToken(authentication);
-        result.put("status", true);
-        result.put("message", "Foydalanuchi tizimga kirdi.");
-        result.put("token-type", "Bearer");
-        result.put("token", token);
+        final LoginResult result = new LoginResult(true, "Foydalanuvchi tizimga kirdi.", "Bearer", token);
         return ResponseEntity.ok(result);
     }
 }

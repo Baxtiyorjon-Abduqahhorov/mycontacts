@@ -1,5 +1,7 @@
 package com.bluebird.mycontacts.security;
 
+import com.bluebird.mycontacts.models.LoginResult;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -18,12 +20,13 @@ public class AuthEntryPoint extends BasicAuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         response.setHeader("WWW-Authenticate", "Basic realm=" + getRealmName());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        PrintWriter writer = response.getWriter();
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         final Map<String, Object> result = new HashMap<>();
         result.put("status", false);
         result.put("message", authException.getMessage());
-        result.put("token-type", null);
+        result.put("tokenType", null);
         result.put("token", null);
+        final PrintWriter writer = response.getWriter();
         writer.println(result);
     }
 
