@@ -1,13 +1,11 @@
 package com.bluebird.mycontacts.controllers;
 
-import com.bluebird.mycontacts.extra.LoginResult;
-import com.bluebird.mycontacts.extra.RegisterResult;
 import com.bluebird.mycontacts.services.AuthService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,13 +17,13 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<RegisterResult> register(@RequestParam("phone") String phone, @RequestParam("password") String password) {
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> register(@RequestPart String phone, @RequestPart String password) {
         return authService.register(phone, password);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResult> login(@RequestParam("phone") String phone, @RequestParam("password") String password) {
+    @PostMapping(value = "/login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> login(@RequestPart String phone, @RequestPart String password) {
         return authService.login(phone, password);
     }
 
