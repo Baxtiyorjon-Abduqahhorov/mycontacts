@@ -19,7 +19,10 @@ public class UserInfo {
     @Column(name = "pro_pic")
     private String pro_pic;
 
-    @Column(name = "phone")
+    @Column(name = "bio")
+    private String bio;
+
+    @Column(name = "phone", unique = true)
     private String phone;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -63,5 +66,13 @@ public class UserInfo {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 }

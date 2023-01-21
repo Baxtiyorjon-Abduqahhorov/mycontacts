@@ -27,7 +27,7 @@ public class TokenGenerator {
                 .compact();
     }
 
-    public String getUsernameFromToken(String token){
+    public String getUsernameFromToken(String token) {
         final Claims claims = Jwts.parser().setSigningKey(SecurityVariables.SECRET).parseClaimsJws(token).getBody();
         return claims.getSubject();
     }
@@ -36,14 +36,14 @@ public class TokenGenerator {
         try {
             final Claims claims = Jwts.parser().setSigningKey(SecurityVariables.SECRET).parseClaimsJws(token).getBody();
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
 
-    public String getTokenFromRequest(HttpServletRequest request){
+    public String getTokenFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        if (header.startsWith("Bearer ")){
+        if (header.startsWith("Bearer ")) {
             return header.substring(7);
         }
         return null;

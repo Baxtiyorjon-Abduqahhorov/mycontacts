@@ -31,15 +31,18 @@ public class AuthService {
 
     public final PasswordEncoder passwordEncoder;
 
-    public AuthService(TokenGenerator tokenGenerator, AuthenticationManager authenticationManager, UsersRepository usersRepository, RolesRepository rolesRepository, PasswordEncoder passwordEncoder) {
+    public final UserInfoService userInfoService;
+
+    public AuthService(TokenGenerator tokenGenerator, AuthenticationManager authenticationManager, UsersRepository usersRepository, RolesRepository rolesRepository, PasswordEncoder passwordEncoder, UserInfoService userInfoService) {
         this.tokenGenerator = tokenGenerator;
         this.authenticationManager = authenticationManager;
         this.usersRepository = usersRepository;
         this.rolesRepository = rolesRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userInfoService = userInfoService;
     }
 
-    public ResponseEntity<RegisterResult> register(String phone, String password) {
+    public ResponseEntity<RegisterResult> register(String phone, String password, String firstname, String lastname, String picture, String bio) {
         if (phone.length() != 13 && password.length() < 8) {
             final RegisterResult result = new RegisterResult(false, "Telefon raqami 13ta belgidan iborat bo'lishi kerak va parol kamida 6ta belgidan iborat bo'lishi kerak.");
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
@@ -56,17 +59,23 @@ public class AuthService {
             final RegisterResult result = new RegisterResult(false, "Telefon raqamida faqat '+' va raqamlar ishtirok etishi shart.");
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
-        if (usersRepository.existsByPhone(phone)) {
+        if (usersRepository.existsByUsername(phone)) {
             final RegisterResult result = new RegisterResult(false, "Bu foydalanuvchi allaqachon ro'yhatdan o'tgan.");
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
         final Users users = new Users();
-        users.setPhone(phone);
+        users.setUsername(phone);
         users.setPassword(passwordEncoder.encode(password));
-        final Roles roles = rolesRepository.findByName("USER").get();
+        final Roles roles = rolesRepository.findByName("ROLE_USER").get();
         users.setRoles(Collections.singleton(roles));
 
         usersRepository.save(users);
+
+        RegisterResult registerResult = userInfoService.save(firstname, lastname, picture, phone, bio).getBody();
+        if (!registerResult.getStatus()) {
+            final RegisterResult result = new RegisterResult(false, registerResult.getMessage());
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
 
         final RegisterResult result = new RegisterResult(true, "Foydalanuvchi ro'yhatdan o'tdi.");
         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
@@ -78,5 +87,9 @@ public class AuthService {
         final String token = tokenGenerator.generateToken(authentication);
         final LoginResult result = new LoginResult(true, "Foydalanuvchi tizimga kirdi.", "Bearer", token);
         return ResponseEntity.ok(result);
+    }
+
+    public ResponseEntity<Boolean> checkUser(String phone) {
+        return ResponseEntity.ok(usersRepository.existsByUsername(phone));
     }
 }

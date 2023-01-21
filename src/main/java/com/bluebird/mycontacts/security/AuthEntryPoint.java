@@ -1,6 +1,5 @@
 package com.bluebird.mycontacts.security;
 
-import com.bluebird.mycontacts.models.LoginResult;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;

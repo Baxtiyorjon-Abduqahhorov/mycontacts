@@ -1,7 +1,5 @@
 package com.bluebird.mycontacts.security;
 
-import com.bluebird.mycontacts.entities.Users;
-import com.bluebird.mycontacts.repositories.UsersRepository;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
