@@ -26,8 +26,6 @@ public class FindService {
     }
 
     public ResponseEntity<List<UserInfo>> checker(HttpServletRequest request) {
-        String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
-        final UserInfo userInfo = userInfoService.getByPhone(request).getBody();
         final List<UsersContacts> usersContacts = userContactsService.getByUserId(request).getBody();
         final List<UserInfo> userInfoList = userInfoService.getAll().getBody();
         final List<String> userContactNumbers = new ArrayList<>();
@@ -37,11 +35,11 @@ public class FindService {
             usersContacts.forEach(usersContacts1 -> {
                 userContactNumbers.add(usersContacts1.getContactNumber());
             });
-            userInfoList.forEach(userInfo1 -> {
-                if (userContactNumbers.contains(userInfo1.getPhone())){
-                    availableContacts.add(userInfo1);
+            for (int i = 0; i < 20; i++) {
+                if (userContactNumbers.contains(userInfoList.get(i).getPhone())) {
+                    availableContacts.add(userInfoList.get(i));
                 }
-            });
+            }
         }
 
         return ResponseEntity.ok(availableContacts);

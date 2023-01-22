@@ -1,7 +1,6 @@
 package com.bluebird.mycontacts.controllers;
 
 import com.bluebird.mycontacts.models.LoginResult;
-import com.bluebird.mycontacts.models.RegisterResult;
 import com.bluebird.mycontacts.services.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResult> register(@RequestParam("phone") String phone, @RequestParam("password") String password, @RequestParam("firstname") String firstName, @RequestParam("lastname") String lastName, @RequestParam("bio") String bio, @RequestParam(value = "picture", required = false) String proPic) {
+    public ResponseEntity<LoginResult> register(@RequestParam("phone") String phone, @RequestParam("password") String password, @RequestParam("firstname") String firstName, @RequestParam("lastname") String lastName, @RequestParam("bio") String bio, @RequestParam(value = "picture", required = false) String proPic) {
         return authService.register(phone, password, firstName, lastName, proPic, bio);
     }
 

@@ -42,25 +42,25 @@ public class AuthService {
         this.userInfoService = userInfoService;
     }
 
-    public ResponseEntity<RegisterResult> register(String phone, String password, String firstname, String lastname, String picture, String bio) {
+    public ResponseEntity<LoginResult> register(String phone, String password, String firstname, String lastname, String picture, String bio) {
         if (phone.length() != 13 && password.length() < 8) {
-            final RegisterResult result = new RegisterResult(false, "Telefon raqami 13ta belgidan iborat bo'lishi kerak va parol kamida 6ta belgidan iborat bo'lishi kerak.");
+            final LoginResult result = new LoginResult(false, "Telefon raqami 13ta belgidan iborat bo'lishi kerak va parol kamida 6ta belgidan iborat bo'lishi kerak.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
         if (phone.length() != 13) {
-            final RegisterResult result = new RegisterResult(false, "Telefon raqami 13ta belgidan iborat bo'lishi kerak.");
+            final LoginResult result = new LoginResult(false, "Telefon raqami 13ta belgidan iborat bo'lishi kerak.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
         if (password.length() < 8) {
-            final RegisterResult result = new RegisterResult(false, "Parol kamida 6ta belgidan iborat bo'lishi kerak.");
+            final LoginResult result = new LoginResult(false, "Parol kamida 8ta belgidan iborat bo'lishi kerak.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
         if (phone.matches("[0-9]+")) {
-            final RegisterResult result = new RegisterResult(false, "Telefon raqamida faqat '+' va raqamlar ishtirok etishi shart.");
+            final LoginResult result = new LoginResult(false, "Telefon raqamida faqat '+' va raqamlar ishtirok etishi shart.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
         if (usersRepository.existsByUsername(phone)) {
-            final RegisterResult result = new RegisterResult(false, "Bu foydalanuvchi allaqachon ro'yhatdan o'tgan.");
+            final LoginResult result = new LoginResult(false, "Bu foydalanuvchi allaqachon ro'yhatdan o'tgan.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
         final Users users = new Users();
@@ -73,11 +73,11 @@ public class AuthService {
 
         RegisterResult registerResult = userInfoService.save(firstname, lastname, picture, phone, bio).getBody();
         if (!registerResult.getStatus()) {
-            final RegisterResult result = new RegisterResult(false, registerResult.getMessage());
+            final LoginResult result = new LoginResult(false, registerResult.getMessage(), null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
 
-        final RegisterResult result = new RegisterResult(true, "Foydalanuvchi ro'yhatdan o'tdi.");
+        final LoginResult result = login(phone, password).getBody();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

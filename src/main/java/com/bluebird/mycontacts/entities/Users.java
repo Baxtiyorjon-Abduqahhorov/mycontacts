@@ -2,6 +2,7 @@ package com.bluebird.mycontacts.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,6 +22,9 @@ public class Users implements Serializable {
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Roles> roles;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Users> users;
 
     public Long getId() {
         return id;
