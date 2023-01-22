@@ -23,9 +23,6 @@ public class Users implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Roles> roles;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Users> users;
-
     public Long getId() {
         return id;
     }
