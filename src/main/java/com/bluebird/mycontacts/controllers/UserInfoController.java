@@ -5,8 +5,10 @@ import com.bluebird.mycontacts.models.RegisterResult;
 import com.bluebird.mycontacts.services.UserInfoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -25,7 +27,7 @@ public class UserInfoController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<RegisterResult> put(HttpServletRequest request, @RequestParam("firstname") String firstName, @RequestParam("lastname") String lastName, @RequestParam(value = "picture", required = false) String proPic, @RequestParam("bio") String bio) {
+    public ResponseEntity<RegisterResult> put(HttpServletRequest request, @RequestParam("firstname") String firstName, @RequestParam("lastname") String lastName, @RequestParam(value = "picture", required = false) MultipartFile proPic, @RequestParam("bio") String bio) throws IOException {
         return userInfoService.put(request, firstName, lastName, proPic, bio);
     }
 

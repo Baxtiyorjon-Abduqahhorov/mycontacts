@@ -27,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<LoginResult> register(@RequestParam("phone") String phone, @RequestParam("password") String password, @RequestParam("firstname") String firstName, @RequestParam("lastname") String lastName, @RequestParam("bio") String bio, @RequestParam(value = "picture", required = false) String proPic) {
+    public ResponseEntity<LoginResult> register(@RequestParam("phone") String phone, @RequestParam("password") String password, @RequestParam("firstname") String firstName, @RequestParam("lastname") String lastName, @RequestParam(value = "bio", required = false) String bio, @RequestParam(value = "picture", required = false) MultipartFile proPic) throws IOException {
         return authService.register(phone, password, firstName, lastName, proPic, bio);
     }
 
@@ -42,12 +42,12 @@ public class AuthController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String > upload(@RequestParam("file") MultipartFile file) throws IOException, InterruptedException {
+    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) throws IOException, InterruptedException {
         String path = "/storage/" + fileService.saveFile(file);
         return ResponseEntity.ok("Yes");
     }
     @PostMapping("/preview")
-    public ResponseEntity<byte[]> preview(@RequestParam("name") String name) throws IOException, InterruptedException {
+    public ResponseEntity<byte[]> preview(@RequestParam("name") String name) throws IOException {
         InputStream in = getClass().getResourceAsStream("/storage/" + name);
         System.out.println(in);
         return ResponseEntity.ok()

@@ -15,7 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
 
 @Service
@@ -33,16 +35,19 @@ public class AuthService {
 
     public final UserInfoService userInfoService;
 
-    public AuthService(TokenGenerator tokenGenerator, AuthenticationManager authenticationManager, UsersRepository usersRepository, RolesRepository rolesRepository, PasswordEncoder passwordEncoder, UserInfoService userInfoService) {
+    private final FileService fileService;
+
+    public AuthService(TokenGenerator tokenGenerator, AuthenticationManager authenticationManager, UsersRepository usersRepository, RolesRepository rolesRepository, PasswordEncoder passwordEncoder, UserInfoService userInfoService, FileService fileService) {
         this.tokenGenerator = tokenGenerator;
         this.authenticationManager = authenticationManager;
         this.usersRepository = usersRepository;
         this.rolesRepository = rolesRepository;
         this.passwordEncoder = passwordEncoder;
         this.userInfoService = userInfoService;
+        this.fileService = fileService;
     }
 
-    public ResponseEntity<LoginResult> register(String phone, String password, String firstname, String lastname, String picture, String bio) {
+    public ResponseEntity<LoginResult> register(String phone, String password, String firstname, String lastname, MultipartFile picture, String bio) throws IOException {
         if (phone.length() != 13 && password.length() < 8) {
             final LoginResult result = new LoginResult(false, "Telefon raqami 13ta belgidan iborat bo'lishi kerak va parol kamida 6ta belgidan iborat bo'lishi kerak.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -71,7 +76,7 @@ public class AuthService {
 
         usersRepository.save(users);
 
-        RegisterResult registerResult = userInfoService.save(firstname, lastname, picture, phone, bio).getBody();
+        RegisterResult registerResult = userInfoService.save(firstname, lastname, picture.getBytes(), phone, bio).getBody();
         if (!registerResult.getStatus()) {
             final LoginResult result = new LoginResult(false, registerResult.getMessage(), null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);

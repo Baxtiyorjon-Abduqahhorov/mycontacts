@@ -1,5 +1,7 @@
 package com.bluebird.mycontacts.entities;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -16,8 +18,9 @@ public class UserInfo {
     @Column(name = "last_name")
     private String last_name;
 
-    @Column(name = "pro_pic")
-    private String pro_pic;
+    @Lob
+    @Type(type = "org.hibernate.type.ImageType")
+    private byte[] pro_pic;
 
     @Column(name = "bio")
     private String bio;
@@ -52,14 +55,6 @@ public class UserInfo {
         this.last_name = last_name;
     }
 
-    public String getPro_pic() {
-        return pro_pic;
-    }
-
-    public void setPro_pic(String pro_pic) {
-        this.pro_pic = pro_pic;
-    }
-
     public String getPhone() {
         return phone;
     }
@@ -74,5 +69,13 @@ public class UserInfo {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public byte[] getPro_pic() {
+        return pro_pic;
+    }
+
+    public void setPro_pic(byte[] pro_pic) {
+        this.pro_pic = pro_pic;
     }
 }
