@@ -3,6 +3,7 @@ package com.bluebird.mycontacts.entities;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import javax.print.attribute.standard.MediaSize;
 import java.util.List;
 
 @Entity
@@ -18,9 +19,8 @@ public class UserInfo {
     @Column(name = "last_name")
     private String last_name;
 
-    @Lob
-    @Type(type = "org.hibernate.type.ImageType")
-    private byte[] pro_pic;
+    @Column(name = "pro_pic")
+    private String proPic;
 
     @Column(name = "bio")
     private String bio;
@@ -71,11 +71,10 @@ public class UserInfo {
         this.bio = bio;
     }
 
-    public byte[] getPro_pic() {
-        return pro_pic;
+    public String getProPic() {
+        return proPic;
     }
-
-    public void setPro_pic(byte[] pro_pic) {
-        this.pro_pic = pro_pic;
+    public void setProPic(String proPic) {
+        this.proPic = proPic;
     }
 }
