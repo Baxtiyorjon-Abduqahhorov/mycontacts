@@ -48,11 +48,10 @@ public class UserContactsService {
         return ResponseEntity.ok(new RegisterResult(true, "Deleted"));
     }
 
-    public ResponseEntity<RegisterResult> save(ListContacts listContacts, HttpServletRequest request) {
+    public ResponseEntity<RegisterResult> save(List<ContactObject> listContacts, HttpServletRequest request) {
         String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
-        List<ContactObject> contacts = listContacts.getContacts();
         final UserInfo getUser = userInfoRepository.findByPhone(phone).orElse(null);
-        contacts.forEach(contactObject -> {
+        listContacts.forEach(contactObject -> {
             final UsersContacts usersContacts = new UsersContacts();
             usersContacts.setUserInfo(getUser);
             usersContacts.setContactNumber(contactObject.getNumber());

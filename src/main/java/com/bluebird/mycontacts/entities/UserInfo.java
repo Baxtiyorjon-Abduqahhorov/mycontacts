@@ -3,7 +3,6 @@ package com.bluebird.mycontacts.entities;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import javax.print.attribute.standard.MediaSize;
 import java.util.List;
 
 @Entity
@@ -13,19 +12,19 @@ public class UserInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String first_name;
 
     @Column(name = "last_name")
     private String last_name;
 
-    @Column(name = "pro_pic")
-    private String proPic;
+    @Column(name = "picture")
+    private String pro_pic;
 
     @Column(name = "bio")
     private String bio;
 
-    @Column(name = "phone", unique = true)
+    @Column(name = "phone", unique = true, nullable = false)
     private String phone;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -71,10 +70,11 @@ public class UserInfo {
         this.bio = bio;
     }
 
-    public String getProPic() {
-        return proPic;
+    public String getPro_pic() {
+        return pro_pic;
     }
-    public void setProPic(String proPic) {
-        this.proPic = proPic;
+
+    public void setPro_pic(String pro_pic) {
+        this.pro_pic = pro_pic;
     }
 }

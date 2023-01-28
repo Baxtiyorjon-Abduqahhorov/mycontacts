@@ -1,5 +1,6 @@
 package com.bluebird.mycontacts.services;
 
+import com.bluebird.mycontacts.extra.AppVariables;
 import org.hashids.Hashids;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
@@ -20,8 +21,6 @@ public class FileService {
         this.hashids = new Hashids(getClass().getName(), 8);
     }
 
-    final String PATH = "/Users/tursunali/IdeaProjects/mycontacts/src/main/resources/storage";
-
     public byte[] convert(File file) throws IOException {
         final FileInputStream inputStream = new FileInputStream(file);
         byte[] arr = new byte[(int) file.length()];
@@ -30,16 +29,25 @@ public class FileService {
         return arr;
     }
 
-    public byte[] saveFile(MultipartFile file) throws IOException {
-        final File path = new File(PATH + "/" + hashids.encode(new Date().getTime()) + "." + getFileExtension(file.getOriginalFilename()));
+    public String saveFile(MultipartFile file) throws IOException {
+        final File path = new File(AppVariables.PATH + "/" + hashids.encode(new Date().getTime()) + "." + getFileExtension(file.getOriginalFilename()));
         file.transferTo(path);
-//        int stIndex = path.getAbsolutePath().lastIndexOf("\\");
-        return convert(path);
+        return path.getAbsolutePath();
+    }
+
+    public byte[] imageBytes(String path) throws IOException {
+        final File file = new File(path);
+        return convert(file);
     }
 
     public String getFileExtension(String filename) {
         int lastIndex = filename.lastIndexOf(".");
         return filename.substring(lastIndex + 1);
+    }
+
+    public String getFileName(String absolutePath){
+        int lastIndex = absolutePath.lastIndexOf("/");
+        return absolutePath.substring(lastIndex);
     }
 
 }

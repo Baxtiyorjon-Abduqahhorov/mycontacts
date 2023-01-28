@@ -1,6 +1,7 @@
 package com.bluebird.mycontacts.controllers;
 
 import com.bluebird.mycontacts.entities.UsersContacts;
+import com.bluebird.mycontacts.models.ContactObject;
 import com.bluebird.mycontacts.models.ListContacts;
 import com.bluebird.mycontacts.models.RegisterResult;
 import com.bluebird.mycontacts.services.UserContactsService;
@@ -25,7 +26,7 @@ public class UserContactsController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<RegisterResult> save(@RequestBody ListContacts listContacts, HttpServletRequest request) {
+    public ResponseEntity<RegisterResult> save(@RequestBody List<ContactObject> listContacts, HttpServletRequest request) {
         return userContactsService.save(listContacts, request);
     }
 

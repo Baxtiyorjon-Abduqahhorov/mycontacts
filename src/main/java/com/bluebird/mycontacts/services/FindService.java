@@ -1,7 +1,8 @@
 package com.bluebird.mycontacts.services;
 
-import com.bluebird.mycontacts.entities.UserInfo;
-import com.bluebird.mycontacts.entities.UsersContacts;
+import com.bluebird.mycontacts.extra.AppVariables;
+import com.bluebird.mycontacts.models.AvailableContactResult;
+import com.bluebird.mycontacts.repositories.UserInfoRepository;
 import com.bluebird.mycontacts.security.TokenGenerator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,33 +14,27 @@ import java.util.List;
 @Service
 public class FindService {
 
-    private final UserContactsService userContactsService;
-
-    private final UserInfoService userInfoService;
+    private final UserInfoRepository userInfoRepository;
 
     private final TokenGenerator tokenGenerator;
 
-    public FindService(UserContactsService userContactsService, UserInfoService userInfoService, TokenGenerator tokenGenerator) {
-        this.userContactsService = userContactsService;
-        this.userInfoService = userInfoService;
+    private final FileService fileService;
+
+    public FindService(UserInfoRepository userInfoRepository, TokenGenerator tokenGenerator, FileService fileService) {
+        this.userInfoRepository = userInfoRepository;
         this.tokenGenerator = tokenGenerator;
+        this.fileService = fileService;
     }
 
-    public ResponseEntity<List<UserInfo>> checker(HttpServletRequest request) {
-        final List<UsersContacts> usersContacts = userContactsService.getByUserId(request).getBody();
-        final List<UserInfo> userInfoList = userInfoService.getAll().getBody();
-        final List<String> userContactNumbers = new ArrayList<>();
-        List<UserInfo> availableContacts = new ArrayList<>();
+    public ResponseEntity<List<AvailableContactResult>> checker(HttpServletRequest request) {
+        final String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
+        List<AvailableContactResult> availableContacts = new ArrayList<>();
 
-        if (usersContacts != null && !usersContacts.isEmpty() && userInfoList != null) {
-            usersContacts.forEach(usersContacts1 -> {
-                userContactNumbers.add(usersContacts1.getContactNumber());
-            });
-            for (int i = 0; i < 20; i++) {
-                if (userContactNumbers.contains(userInfoList.get(i).getPhone())) {
-                    availableContacts.add(userInfoList.get(i));
-                }
-            }
+        for (List<Object> object : userInfoRepository.availableContacts(phone)) {
+            String path = AppVariables.IMAGE_SERVER_URL + fileService.getFileName(String.valueOf(object.get(3)));
+            System.out.println(path);
+            final AvailableContactResult availableContactResult = new AvailableContactResult(String.valueOf(object.get(0)), String.valueOf(object.get(1)), String.valueOf(object.get(2)), path, String.valueOf(object.get(4)));
+            availableContacts.add(availableContactResult);
         }
 
         return ResponseEntity.ok(availableContacts);

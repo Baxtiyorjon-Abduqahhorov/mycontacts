@@ -10,10 +10,10 @@ public class UsersContacts {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private UserInfo userInfo;
 
-    @Column(name = "contact_number", unique = true)
+    @Column(name = "contact_number", nullable = false)
     private String contactNumber;
 
     @Column(name = "contact_name")

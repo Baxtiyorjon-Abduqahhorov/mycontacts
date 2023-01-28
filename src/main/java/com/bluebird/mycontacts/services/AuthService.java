@@ -76,7 +76,7 @@ public class AuthService {
 
         usersRepository.save(users);
 
-        RegisterResult registerResult = userInfoService.save(firstname, lastname, picture.getBytes(), phone, bio).getBody();
+        RegisterResult registerResult = userInfoService.save(firstname, lastname, picture, phone, bio).getBody();
         if (!registerResult.getStatus()) {
             final LoginResult result = new LoginResult(false, registerResult.getMessage(), null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
