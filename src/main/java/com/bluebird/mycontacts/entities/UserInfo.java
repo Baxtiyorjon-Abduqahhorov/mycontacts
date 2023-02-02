@@ -18,7 +18,7 @@ public class UserInfo {
     @Column(name = "last_name")
     private String last_name;
 
-    @Column(name = "picture")
+    @Column(name = "picture", unique = true)
     private String pro_pic;
 
     @Column(name = "bio")
