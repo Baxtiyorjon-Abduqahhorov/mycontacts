@@ -29,14 +29,11 @@ public class FindService {
     public ResponseEntity<List<AvailableContactResult>> checker(HttpServletRequest request) {
         final String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
         List<AvailableContactResult> availableContacts = new ArrayList<>();
-
         for (List<Object> object : userInfoRepository.availableContacts(phone)) {
-            String path = AppVariables.IMAGE_SERVER_URL + fileService.getFileName(String.valueOf(object.get(3)));
-            System.out.println(path);
+            String path = object.get(3) == null ? null : AppVariables.IMAGE_SERVER_URL + fileService.getFileName(String.valueOf(object.get(3)));
             final AvailableContactResult availableContactResult = new AvailableContactResult(String.valueOf(object.get(0)), String.valueOf(object.get(1)), String.valueOf(object.get(2)), path, String.valueOf(object.get(4)));
             availableContacts.add(availableContactResult);
         }
-
         return ResponseEntity.ok(availableContacts);
     }
 }

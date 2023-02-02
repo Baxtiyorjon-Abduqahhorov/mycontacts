@@ -1,5 +1,7 @@
 package com.bluebird.mycontacts.models;
 
+import com.bluebird.mycontacts.entities.UsersContacts;
+
 public class ContactObject {
 
     private String number;
@@ -20,5 +22,11 @@ public class ContactObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        final UsersContacts user = (UsersContacts) obj;
+        return this.getName().equals(user.getContactName()) && this.getNumber().equals(user.getContactNumber());
     }
 }

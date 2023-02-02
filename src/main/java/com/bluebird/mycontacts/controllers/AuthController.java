@@ -3,15 +3,11 @@ package com.bluebird.mycontacts.controllers;
 import com.bluebird.mycontacts.models.LoginResult;
 import com.bluebird.mycontacts.services.AuthService;
 import com.bluebird.mycontacts.services.FileService;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")

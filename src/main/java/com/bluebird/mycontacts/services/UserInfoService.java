@@ -12,8 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.sql.Blob;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -44,7 +42,8 @@ public class UserInfoService {
             userInfoResult.setId(userInfo.getId());
             userInfoResult.setBio(userInfo.getBio());
             userInfoResult.setPhone(userInfo.getPhone());
-            userInfoResult.setPicture(AppVariables.IMAGE_SERVER_URL + fileService.getFileName(userInfo.getPro_pic()));
+            if (userInfo.getPro_pic() != null)
+                userInfoResult.setPicture(AppVariables.IMAGE_SERVER_URL + fileService.getFileName(userInfo.getPro_pic()));
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -53,10 +52,9 @@ public class UserInfoService {
 
     public ResponseEntity<RegisterResult> save(String firstName, String lastName, MultipartFile proPic, String phone, String bio) throws IOException {
         final UserInfo userInfo = new UserInfo();
-
         userInfo.setFirst_name(firstName);
         userInfo.setLast_name(lastName);
-        userInfo.setPro_pic(fileService.saveFile(proPic));
+        userInfo.setPro_pic(proPic == null ? null : fileService.saveFile(proPic));
         userInfo.setPhone(phone);
         userInfo.setBio(bio);
 
@@ -77,7 +75,7 @@ public class UserInfoService {
         userInfo.setId(userInfo.getId());
         userInfo.setFirst_name(firstName);
         userInfo.setLast_name(lastName);
-        userInfo.setPro_pic(fileService.saveFile(proPic));
+        userInfo.setPro_pic(proPic == null ? userInfo.getPro_pic() : fileService.saveFile(proPic));
         userInfo.setPhone(userInfo.getPhone());
         userInfo.setBio(bio);
         userInfoRepository.save(userInfo);

@@ -74,14 +74,14 @@ public class AuthService {
         final Roles roles = rolesRepository.findByName("ROLE_USER").get();
         users.setRoles(Collections.singleton(roles));
 
-        usersRepository.save(users);
+
 
         RegisterResult registerResult = userInfoService.save(firstname, lastname, picture, phone, bio).getBody();
         if (!registerResult.getStatus()) {
             final LoginResult result = new LoginResult(false, registerResult.getMessage(), null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
-
+        usersRepository.save(users);
         final LoginResult result = login(phone, password).getBody();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
