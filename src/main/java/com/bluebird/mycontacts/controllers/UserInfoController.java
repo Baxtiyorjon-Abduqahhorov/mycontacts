@@ -45,7 +45,9 @@ public class UserInfoController {
 
     @GetMapping("/picture/{name}")
     public ResponseEntity<byte[]> getPicture(@PathVariable String name)  throws IOException {
+
         InputStream in = getClass().getResourceAsStream("/storage/" + name);
+
         System.out.println(in);
         return ResponseEntity.ok()
                 .contentType((fileService.getFileExtension("/storage/" + name) == "png")? MediaType.IMAGE_PNG:MediaType.IMAGE_JPEG)

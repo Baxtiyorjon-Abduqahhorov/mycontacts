@@ -30,7 +30,7 @@ public class FileService {
     }
 
     public String saveFile(MultipartFile file) throws IOException {
-        final File path = new File("/Users/tursunali/IdeaProjects/mycontacts/src/main/resources/storage/" + hashids.encode(new Date().getTime()) + "." + getFileExtension(file.getOriginalFilename()));
+        final File path = new File(AppVariables.PATH + hashids.encode(new Date().getTime()) + "." + getFileExtension(file.getOriginalFilename()));
         file.transferTo(path);
         return path.getAbsolutePath();
     }
