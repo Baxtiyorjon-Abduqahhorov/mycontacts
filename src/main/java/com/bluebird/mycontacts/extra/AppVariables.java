@@ -1,8 +1,13 @@
 package com.bluebird.mycontacts.extra;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public class AppVariables {
 
-    public static String PATH =  System.getProperty("user.dir").replace("/build/libs","")+"/src/main/resources/storage/";
+    public static String PATH = System.getProperty("user.dir").replace("/build/libs", "") + "/src/main/resources/storage/";
 
-    public static String IMAGE_SERVER_URL = "http://132.145.138.206:8080/api/info/picture";
+    @Value("${server.host}")
+    static String serverHost;
+
+    public static String IMAGE_SERVER_URL = serverHost + "/api/info/picture";
 }
