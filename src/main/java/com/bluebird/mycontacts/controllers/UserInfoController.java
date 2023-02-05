@@ -38,10 +38,12 @@ public class UserInfoController {
         return userInfoService.put(request, firstName, lastName, proPic, bio);
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<UserInfoResult> getUser(HttpServletRequest request) throws IOException {
+    @GetMapping("/me")
+    public ResponseEntity<UserInfoResult> getMe(HttpServletRequest request) throws IOException {
         return userInfoService.getByPhone(request);
     }
+
+
 
     @GetMapping("/picture/{name}")
     public ResponseEntity<byte[]> getPicture(@PathVariable String name)  throws IOException {

@@ -21,4 +21,7 @@ public interface UserContactsRepository extends JpaRepository<UsersContacts, Lon
     @Modifying
     @Query(value = "delete from users_contacts where user_id = :uid", nativeQuery = true)
     void delAllByUserId(@Param("uid") Long id);
+
+
+    boolean existsByUserInfo(UserInfo userInfo);
 }

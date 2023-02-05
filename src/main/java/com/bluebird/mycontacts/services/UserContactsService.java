@@ -52,10 +52,12 @@ public class UserContactsService {
         return ResponseEntity.ok(new RegisterResult(true, "Deleted"));
     }
 
-    public ResponseEntity<RegisterResult> save(List<ContactObject> listContacts, HttpServletRequest request) {
+    public ResponseEntity<RegisterResult> update(List<ContactObject> listContacts, HttpServletRequest request) {
+
         String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
         final UserInfo getUser = userInfoRepository.findByPhone(phone).orElse(null);
         List<UsersContacts> usersContactsListCL = new ArrayList<>();
+
         listContacts.forEach(contactObject -> {
             final UsersContacts usersContacts = new UsersContacts();
             usersContacts.setUserInfo(getUser);
@@ -63,33 +65,19 @@ public class UserContactsService {
             usersContacts.setContactName(contactObject.getName());
             usersContactsListCL.add(usersContacts);
         });
-        if(!usersContactsListCL.isEmpty()){
+        if(!userContactsRepository.existsByUserInfo(getUser)){
             userContactsRepository.saveAll(usersContactsListCL);
             return ResponseEntity.ok(new RegisterResult(true, "Kontaktlar saqlandi."));
         }
-        else {
-            return null;
-        }
-    }
-
-    public ResponseEntity<RegisterResult> update(List<ContactObject> listContacts, HttpServletRequest request) {
-        String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
-        final UserInfo getUser = userInfoRepository.findByPhone(phone).orElse(null);
-        List<UsersContacts> usersContactsListCL = new ArrayList<>();
-        userContactsRepository.delAllByUserId(getUser.getId());
-        listContacts.forEach(contactObject -> {
-            final UsersContacts usersContacts = new UsersContacts();
-            usersContacts.setUserInfo(getUser);
-            usersContacts.setContactNumber(contactObject.getNumber());
-            usersContacts.setContactName(contactObject.getName());
-            usersContactsListCL.add(usersContacts);
-        });
-        if(!usersContactsListCL.isEmpty()){
+        else if(!listContacts.isEmpty()){
+            userContactsRepository.delAllByUserId(getUser.getId());
             userContactsRepository.saveAll(usersContactsListCL);
             return ResponseEntity.ok(new RegisterResult(true, "Kontaktlar yangilandi."));
-        } else {
-            return ResponseEntity.ok(new RegisterResult(false, "Kontaktlar mavjud emas."));
+        }else{
+            return ResponseEntity.ok(new RegisterResult(false, "Kontaktlar saqlanmadi "));
         }
+
+
     }
 
 

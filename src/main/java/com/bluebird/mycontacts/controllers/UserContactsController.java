@@ -24,10 +24,6 @@ public class UserContactsController {
         return userContactsService.getByUserId(request);
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<RegisterResult> save(@RequestBody List<ContactObject> listContacts, HttpServletRequest request) {
-        return userContactsService.save(listContacts, request);
-    }
 
     @PostMapping("/sync")
     public ResponseEntity<RegisterResult> sync(@RequestBody List<ContactObject> listContacts, HttpServletRequest request) {
