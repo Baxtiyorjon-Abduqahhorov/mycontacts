@@ -43,7 +43,10 @@ public class UserInfoController {
         return userInfoService.getByPhone(request);
     }
 
-
+    @GetMapping("/user")
+    public ResponseEntity<UserInfoResult> getUser(@RequestParam("id") Long id) throws IOException {
+        return userInfoService.getById(id);
+    }
 
     @GetMapping("/picture/{name}")
     public ResponseEntity<byte[]> getPicture(@PathVariable String name)  throws IOException {
@@ -54,10 +57,5 @@ public class UserInfoController {
         return ResponseEntity.ok()
                 .contentType((fileService.getFileExtension("/storage/" + name) == "png")? MediaType.IMAGE_PNG:MediaType.IMAGE_JPEG)
                 .body(in.readAllBytes());
-    }
-
-    @DeleteMapping("/delete")
-    public ResponseEntity<RegisterResult> delete(HttpServletRequest request) {
-        return userInfoService.delete(request);
     }
 }

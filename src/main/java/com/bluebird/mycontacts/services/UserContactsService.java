@@ -77,7 +77,6 @@ public class UserContactsService {
             return ResponseEntity.ok(new RegisterResult(false, "Kontaktlar saqlanmadi "));
         }
 
-
     }
 
 

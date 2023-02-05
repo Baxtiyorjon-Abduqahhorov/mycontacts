@@ -7,6 +7,7 @@ import com.bluebird.mycontacts.models.UserInfoResult;
 import com.bluebird.mycontacts.repositories.UserInfoRepository;
 import com.bluebird.mycontacts.security.TokenGenerator;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,23 +51,28 @@ public class UserInfoService {
         return ResponseEntity.ok(userInfoResult);
     }
 
+    public ResponseEntity<UserInfoResult> getById(Long id){
+        final UserInfo userInfo = userInfoRepository.findById(id).orElseThrow(()-> new UsernameNotFoundException("User not found"));
+        final UserInfoResult userInfoResult = new UserInfoResult();
+        userInfoResult.setId(userInfo.getId());
+        userInfoResult.setFirst_name(userInfo.getFirst_name());
+        userInfoResult.setBio(userInfo.getBio());
+        userInfoResult.setPhone(userInfo.getPhone());
+        userInfoResult.setLast_name(userInfo.getLast_name());
+        userInfoResult.setPicture(userInfo.getPro_pic());
+        return ResponseEntity.ok(userInfoResult);
+    }
+
     public ResponseEntity<RegisterResult> save(String firstName, String lastName, MultipartFile proPic, String phone, String bio) throws IOException {
         final UserInfo userInfo = new UserInfo();
         userInfo.setFirst_name(firstName);
         userInfo.setLast_name(lastName);
-        userInfo.setPro_pic(proPic == null ? null : fileService.saveFile(proPic));
+        userInfo.setPro_pic(proPic == null ? null : AppVariables.IMAGE_SERVER_URL + fileService.getFileName(fileService.saveFile(proPic)));
         userInfo.setPhone(phone);
         userInfo.setBio(bio);
 
         userInfoRepository.save(userInfo);
         return ResponseEntity.ok(new RegisterResult(true, "Saved"));
-    }
-
-    public ResponseEntity<RegisterResult> delete(HttpServletRequest request) {
-        String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
-        final UserInfo userInfo = userInfoRepository.findByPhone(phone).orElse(null);
-        userInfoRepository.deleteById(userInfo.getId());
-        return ResponseEntity.ok(new RegisterResult(true, "Deleted"));
     }
 
     public ResponseEntity<RegisterResult> put(HttpServletRequest request, String firstName, String lastName, MultipartFile proPic, String bio) throws IOException {
