@@ -2,10 +2,10 @@ package com.bluebird.mycontacts.services;
 
 import com.bluebird.mycontacts.entities.Posts;
 import com.bluebird.mycontacts.entities.UserInfo;
-import com.bluebird.mycontacts.models.post.PostModel;
-import com.bluebird.mycontacts.models.post.PostResultModel;
-import com.bluebird.mycontacts.models.post.UserLikeModel;
-import com.bluebird.mycontacts.models.post.UserModel;
+import com.bluebird.mycontacts.extra.AppVariables;
+import com.bluebird.mycontacts.models.AvailableContactResult;
+import com.bluebird.mycontacts.models.PostsResultModel;
+import com.bluebird.mycontacts.models.post.*;
 import com.bluebird.mycontacts.repositories.PostsRepository;
 import com.bluebird.mycontacts.repositories.UserInfoRepository;
 import com.bluebird.mycontacts.security.TokenGenerator;
@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class PostsService {
@@ -30,16 +29,14 @@ public class PostsService {
 
     private final FileService fileService;
 
-    private final UserInfoService userInfoService;
 
     private final FindService findService;
 
-    public PostsService(PostsRepository postsRepository, TokenGenerator tokenGenerator, UserInfoRepository userInfoRepository, FileService fileService, UserInfoService userInfoService, FindService findService) {
+    public PostsService(PostsRepository postsRepository, TokenGenerator tokenGenerator, UserInfoRepository userInfoRepository, FileService fileService, FindService findService) {
         this.postsRepository = postsRepository;
         this.tokenGenerator = tokenGenerator;
         this.userInfoRepository = userInfoRepository;
         this.fileService = fileService;
-        this.userInfoService = userInfoService;
         this.findService = findService;
     }
 
@@ -129,27 +126,40 @@ public class PostsService {
         return ResponseEntity.ok(false);
     }
 
-    public ResponseEntity<PostResultModel> full(HttpServletRequest request){
+    public ResponseEntity<PostsResultModel> findById(Long postId) {
+        final Posts posts = postsRepository.findById(postId).orElse(null);
+        final PostsResultModel postsResultModel = new PostsResultModel(posts.getId(), posts.getPicture(), posts.getCaption(), posts.getCreatedDate(), posts.getEditedDate(), posts.getUserInfo());
+        return ResponseEntity.ok(postsResultModel);
+    }
+
+    public ResponseEntity<PostResultModel> full(HttpServletRequest request) {
+        final String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
+        final UserInfo userInfo = userInfoRepository.findByPhone(phone).orElse(null);
         final List<UserModel> users = new ArrayList<>();
-        AtomicReference<UserLikeModel> userLikeModel = null;
+        UserLikeModel userLikeModel = null;
         final List<PostModel> posts = new ArrayList<>();
+        final List<String> last4Posts = new ArrayList<>();
 
-        findService.checker(request).getBody().stream().map(
-                e -> {
-                    final UserModel userModel = new UserModel(e.getUser_id(), e.getPicture(), e.getFirst_name());
-                    userLikeModel.set(new UserLikeModel(e.getFirst_name(), e.getPicture(), e.getBio()));
-                    users.add(userModel);
-                    return null;
-                }
-        );
+        for (Posts e : Objects.requireNonNull(getLastPost(request).getBody())) {
+            for (List<Object> i : postsRepository.last4(e.getUserInfo().getId(), e.getId())) {
+                last4Posts.add(AppVariables.SERVER_URL + "/api/posts/one/" + i.get(0).toString());
+            }
+            break;
+        }
 
-        getLastPost(request).getBody().stream().map(
-                e -> {
-                    final PostModel postModel = new PostModel(e.getId(), e.getPicture(), e.getCaption(), userLikeModel.get(), new ArrayList<>(), "", (boolean) getLike(request, e.getId()).getBody().get("like"));
-                    return null;
-                }
-        );
-        return null;
+        for (AvailableContactResult e : Objects.requireNonNull(findService.checker(request).getBody())) {
+            final UserModel userModel = new UserModel(e.getUser_id(), e.getPicture(), e.getFirst_name());
+            userLikeModel = new UserLikeModel(e.getFirst_name(), e.getPicture(), e.getBio());
+            users.add(userModel);
+        }
+
+        UserLikeModel finalUserLikeModel = userLikeModel;
+        for (Posts e : Objects.requireNonNull(getLastPost(request).getBody())) {
+            final PostModel postModel = new PostModel(e.getId(), e.getPicture(), e.getCaption(), finalUserLikeModel, last4Posts, "", (boolean) getLike(request, e.getId()).getBody().get("like"));
+            posts.add(postModel);
+        }
+
+        return ResponseEntity.ok(new PostResultModel(userInfo.getId(), new PostDataModel(users, posts)));
     }
 
 }

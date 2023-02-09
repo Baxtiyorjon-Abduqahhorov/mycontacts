@@ -1,6 +1,8 @@
 package com.bluebird.mycontacts.controllers;
 
 import com.bluebird.mycontacts.entities.Posts;
+import com.bluebird.mycontacts.models.PostsResultModel;
+import com.bluebird.mycontacts.models.post.PostResultModel;
 import com.bluebird.mycontacts.repositories.PostsRepository;
 import com.bluebird.mycontacts.services.PostsService;
 import org.springframework.http.ResponseEntity;
@@ -39,18 +41,23 @@ public class PostsController {
     }
 
     @GetMapping("/last")
-    public ResponseEntity<List<Posts>> last(HttpServletRequest request){
+    public ResponseEntity<List<Posts>> last(HttpServletRequest request) {
         return postsService.getLastPost(request);
     }
 
-    @GetMapping("/like")
-    public ResponseEntity<Map<String, Object>> getLikes(HttpServletRequest request, @RequestParam("postId") Long postId){
-        return postsService.getLike(request, postId);
+    @GetMapping("/one/{postId}")
+    public ResponseEntity<PostsResultModel> getPost(@PathVariable Long postId) {
+        return postsService.findById(postId);
     }
 
     @PostMapping("/like")
     public ResponseEntity<Boolean> setLike(@RequestParam("postId") Long postId, HttpServletRequest request) {
         return postsService.setLike(request, postId);
+    }
+
+    @GetMapping("/full")
+    public ResponseEntity<PostResultModel> full(HttpServletRequest request) {
+        return postsService.full(request);
     }
 
 }

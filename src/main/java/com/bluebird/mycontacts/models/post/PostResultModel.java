@@ -1,32 +1,31 @@
 package com.bluebird.mycontacts.models.post;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class PostResultModel implements Serializable {
 
-    private List<UserModel> contacts20;
+    private Long user_id;
 
-    private List<PostModel> posts;
+    private PostDataModel data;
 
-    public PostResultModel(List<UserModel> contacts20, List<PostModel> posts) {
-        this.contacts20 = contacts20;
-        this.posts = posts;
+    public PostResultModel(Long user_id, PostDataModel data) {
+        this.user_id = user_id;
+        this.data = data;
     }
 
-    public List<UserModel> getContacts20() {
-        return contacts20;
+    public Long getUser_id() {
+        return user_id;
     }
 
-    public void setContacts20(List<UserModel> contacts20) {
-        this.contacts20 = contacts20;
+    public void setUser_id(Long user_id) {
+        this.user_id = user_id;
     }
 
-    public List<PostModel> getPosts() {
-        return posts;
+    public PostDataModel getData() {
+        return data;
     }
 
-    public void setPosts(List<PostModel> posts) {
-        this.posts = posts;
+    public void setData(PostDataModel data) {
+        this.data = data;
     }
 }
