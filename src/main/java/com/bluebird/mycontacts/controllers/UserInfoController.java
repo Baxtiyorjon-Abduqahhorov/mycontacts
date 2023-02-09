@@ -48,9 +48,13 @@ public class UserInfoController {
         return userInfoService.getById(id);
     }
 
+    @PostMapping("/like")
+    public ResponseEntity<Boolean> like(@RequestParam("postId") Long postId, HttpServletRequest request) {
+        return userInfoService.setLike(request, postId);
+    }
+
     @GetMapping("/picture/{name}")
     public ResponseEntity<byte[]> getPicture(@PathVariable String name)  throws IOException {
-
         InputStream in = getClass().getResourceAsStream("/storage/" + name);
         return ResponseEntity.ok()
                 .contentType((fileService.getFileExtension("/storage/" + name) == "png")? MediaType.IMAGE_PNG:MediaType.IMAGE_JPEG)

@@ -3,7 +3,9 @@ package com.bluebird.mycontacts.entities;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_info")
@@ -29,6 +31,20 @@ public class UserInfo {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<UserInfo> userInfos;
+
+    @ManyToMany
+    @JoinTable(name = "post_likes",
+            joinColumns = @JoinColumn(name = "user_info_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"))
+    private Set<Posts> posts = new LinkedHashSet<>();
+
+    public Set<Posts> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(Set<Posts> posts) {
+        this.posts = posts;
+    }
 
     public Long getId() {
         return id;

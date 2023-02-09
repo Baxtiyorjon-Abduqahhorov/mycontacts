@@ -1,9 +1,11 @@
 package com.bluebird.mycontacts.services;
 
+import com.bluebird.mycontacts.entities.Posts;
 import com.bluebird.mycontacts.entities.UserInfo;
 import com.bluebird.mycontacts.extra.AppVariables;
 import com.bluebird.mycontacts.models.RegisterResult;
 import com.bluebird.mycontacts.models.UserInfoResult;
+import com.bluebird.mycontacts.repositories.PostsRepository;
 import com.bluebird.mycontacts.repositories.UserInfoRepository;
 import com.bluebird.mycontacts.security.TokenGenerator;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +24,14 @@ public class UserInfoService {
     private final TokenGenerator tokenGenerator;
 
     private final FileService fileService;
+    private final PostsRepository postsRepository;
 
-    public UserInfoService(UserInfoRepository userInfoRepository, TokenGenerator tokenGenerator, FileService fileService) {
+    public UserInfoService(UserInfoRepository userInfoRepository, TokenGenerator tokenGenerator, FileService fileService,
+                           PostsRepository postsRepository) {
         this.userInfoRepository = userInfoRepository;
         this.tokenGenerator = tokenGenerator;
         this.fileService = fileService;
+        this.postsRepository = postsRepository;
     }
 
     public ResponseEntity<List<UserInfo>> getAll() {
@@ -51,8 +56,8 @@ public class UserInfoService {
         return ResponseEntity.ok(userInfoResult);
     }
 
-    public ResponseEntity<UserInfoResult> getById(Long id){
-        final UserInfo userInfo = userInfoRepository.findById(id).orElseThrow(()-> new UsernameNotFoundException("User not found"));
+    public ResponseEntity<UserInfoResult> getById(Long id) {
+        final UserInfo userInfo = userInfoRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         final UserInfoResult userInfoResult = new UserInfoResult();
         userInfoResult.setId(userInfo.getId());
         userInfoResult.setFirst_name(userInfo.getFirst_name());
@@ -88,4 +93,20 @@ public class UserInfoService {
         return ResponseEntity.ok(new RegisterResult(true, "Updated"));
     }
 
+    public ResponseEntity<Boolean> setLike(HttpServletRequest request, Long postId) {
+        final String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
+        final UserInfo userInfo = userInfoRepository.findByPhone(phone).orElse(null);
+        final Posts post = postsRepository.findById(postId).orElse(null);
+        if (userInfo == null || post == null) {
+            throw new UsernameNotFoundException("User or Post not found");
+        }
+        if (userInfoRepository.check(userInfo.getId(), post.getId()).size() == 0) {
+            userInfoRepository.insertLike(userInfo.getId(), post.getId());
+            return ResponseEntity.ok(true);
+        }
+        userInfoRepository.deleteLike(userInfo.getId(), post.getId());
+        return ResponseEntity.ok(false);
+    }
+
 }
+
