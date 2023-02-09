@@ -27,8 +27,6 @@ public class Posts implements Serializable {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserInfo userInfo;
 
-
-
     public Long getId() {
         return id;
     }

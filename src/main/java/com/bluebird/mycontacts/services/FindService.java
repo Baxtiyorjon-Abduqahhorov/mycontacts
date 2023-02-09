@@ -31,7 +31,7 @@ public class FindService {
         List<AvailableContactResult> availableContacts = new ArrayList<>();
         for (List<Object> object : userInfoRepository.availableContacts(phone)) {
             String path = object.get(3) == null ? null : AppVariables.IMAGE_SERVER_URL + fileService.getFileName(String.valueOf(object.get(3)));
-            final AvailableContactResult availableContactResult = new AvailableContactResult(String.valueOf(object.get(0)), String.valueOf(object.get(1)), String.valueOf(object.get(2)), path, String.valueOf(object.get(4)));
+            final AvailableContactResult availableContactResult = new AvailableContactResult(Long.valueOf(String.valueOf(object.get(5))), String.valueOf(object.get(0)), String.valueOf(object.get(1)), String.valueOf(object.get(2)), path, String.valueOf(object.get(4)));
             availableContacts.add(availableContactResult);
         }
         return ResponseEntity.ok(availableContacts);

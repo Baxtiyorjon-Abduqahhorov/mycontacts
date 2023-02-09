@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class AvailableContactResult implements Serializable {
 
+    private Long user_id;
+
     private String contact_number;
 
     private String first_name;
@@ -14,12 +16,21 @@ public class AvailableContactResult implements Serializable {
 
     private String bio;
 
-    public AvailableContactResult(String contact_number, String first_name, String last_name, String picture, String bio) {
+    public AvailableContactResult(Long userId, String contact_number, String first_name, String last_name, String picture, String bio) {
+        user_id = userId;
         this.contact_number = contact_number;
         this.first_name = first_name;
         this.last_name = last_name;
         this.picture = picture;
         this.bio = bio;
+    }
+
+    public Long getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(Long user_id) {
+        this.user_id = user_id;
     }
 
     public String getContact_number() {

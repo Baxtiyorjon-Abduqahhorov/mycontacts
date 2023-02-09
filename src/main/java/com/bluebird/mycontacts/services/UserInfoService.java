@@ -93,20 +93,5 @@ public class UserInfoService {
         return ResponseEntity.ok(new RegisterResult(true, "Updated"));
     }
 
-    public ResponseEntity<Boolean> setLike(HttpServletRequest request, Long postId) {
-        final String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
-        final UserInfo userInfo = userInfoRepository.findByPhone(phone).orElse(null);
-        final Posts post = postsRepository.findById(postId).orElse(null);
-        if (userInfo == null || post == null) {
-            throw new UsernameNotFoundException("User or Post not found");
-        }
-        if (userInfoRepository.check(userInfo.getId(), post.getId()).size() == 0) {
-            userInfoRepository.insertLike(userInfo.getId(), post.getId());
-            return ResponseEntity.ok(true);
-        }
-        userInfoRepository.deleteLike(userInfo.getId(), post.getId());
-        return ResponseEntity.ok(false);
-    }
-
 }
 
