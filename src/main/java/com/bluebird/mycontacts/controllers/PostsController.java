@@ -60,4 +60,9 @@ public class PostsController {
         return postsService.full(request);
     }
 
+    @GetMapping("/comments")
+    public ResponseEntity<List<String>> comments(){
+        return postsService.comments();
+    }
+
 }

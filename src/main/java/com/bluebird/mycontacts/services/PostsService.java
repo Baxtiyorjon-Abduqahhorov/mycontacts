@@ -154,7 +154,7 @@ public class PostsService {
         }
 
         for (Posts e : Objects.requireNonNull(getLastPost(request).getBody())) {
-            final PostModel postModel = new PostModel(e.getId(), e.getPicture(), e.getCaption(), getUserModel(userLikeModel, e.getUserInfo()), last4Posts, "", (boolean) getLike(request, e.getId()).getBody().get("like"));
+            final PostModel postModel = new PostModel(e.getId(), e.getPicture(), e.getCaption(), getUserModel(userLikeModel, e.getUserInfo()), last4Posts, AppVariables.PATH + "/api/posts/comments", (boolean) getLike(request, e.getId()).getBody().get("like"));
             posts.add(postModel);
         }
 
@@ -168,6 +168,14 @@ public class PostsService {
             }
         }
         return null;
+    }
+
+    public ResponseEntity<List<String>> comments() {
+        final List<String> comments = new ArrayList<>();
+        comments.add("Zo'r ekan");
+        comments.add("Norm");
+        comments.add("Salomat");
+        return ResponseEntity.ok(comments);
     }
 
 }
