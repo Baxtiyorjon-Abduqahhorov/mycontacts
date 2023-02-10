@@ -51,7 +51,7 @@ public class PostsService {
         posts.setCaption(caption);
         posts.setCreatedDate(now);
         posts.setEditedDate(now);
-        posts.setPicture(file == null ? null : fileService.saveFile(file));
+        posts.setPicture(file == null ? null : AppVariables.IMAGE_SERVER_URL + fileService.getFileName(fileService.saveFile(file)));
         posts.setUserInfo(user);
         postsRepository.save(posts);
         return ResponseEntity.ok(true);
@@ -136,30 +136,38 @@ public class PostsService {
         final String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
         final UserInfo userInfo = userInfoRepository.findByPhone(phone).orElse(null);
         final List<UserModel> users = new ArrayList<>();
-        UserLikeModel userLikeModel = null;
+        final List<UserLikeModel> userLikeModel = new ArrayList<>();
         final List<PostModel> posts = new ArrayList<>();
         final List<String> last4Posts = new ArrayList<>();
 
         for (Posts e : Objects.requireNonNull(getLastPost(request).getBody())) {
             for (List<Object> i : postsRepository.last4(e.getUserInfo().getId(), e.getId())) {
-                last4Posts.add(AppVariables.SERVER_URL + "/api/posts/one/" + i.get(0).toString());
+                last4Posts.add(i.get(4).toString());
             }
             break;
         }
 
         for (AvailableContactResult e : Objects.requireNonNull(findService.checker(request).getBody())) {
             final UserModel userModel = new UserModel(e.getUser_id(), e.getPicture(), e.getFirst_name());
-            userLikeModel = new UserLikeModel(e.getFirst_name(), e.getPicture(), e.getBio());
+            userLikeModel.add(new UserLikeModel(e.getUser_id(), e.getFirst_name(), e.getPicture(), e.getBio()));
             users.add(userModel);
         }
 
-        UserLikeModel finalUserLikeModel = userLikeModel;
         for (Posts e : Objects.requireNonNull(getLastPost(request).getBody())) {
-            final PostModel postModel = new PostModel(e.getId(), e.getPicture(), e.getCaption(), finalUserLikeModel, last4Posts, "", (boolean) getLike(request, e.getId()).getBody().get("like"));
+            final PostModel postModel = new PostModel(e.getId(), e.getPicture(), e.getCaption(), getUserModel(userLikeModel, e.getUserInfo()), last4Posts, "", (boolean) getLike(request, e.getId()).getBody().get("like"));
             posts.add(postModel);
         }
 
         return ResponseEntity.ok(new PostResultModel(userInfo.getId(), new PostDataModel(users, posts)));
+    }
+
+    public UserLikeModel getUserModel(List<UserLikeModel> list, UserInfo userInfo) {
+        for (UserLikeModel u : list) {
+            if (u.getId().equals(userInfo.getId())){
+                return u;
+            }
+        }
+        return null;
     }
 
 }
