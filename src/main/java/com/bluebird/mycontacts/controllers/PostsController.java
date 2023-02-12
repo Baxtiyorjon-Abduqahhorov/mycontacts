@@ -40,10 +40,6 @@ public class PostsController {
         return postsService.delete(id);
     }
 
-    @GetMapping("/last")
-    public ResponseEntity<List<Posts>> last(HttpServletRequest request) {
-        return postsService.getLastPost(request);
-    }
 
     @GetMapping("/one/{postId}")
     public ResponseEntity<PostsResultModel> getPost(@PathVariable Long postId) {

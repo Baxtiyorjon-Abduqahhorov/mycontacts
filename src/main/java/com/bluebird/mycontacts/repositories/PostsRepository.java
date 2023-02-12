@@ -22,6 +22,6 @@ public interface PostsRepository extends JpaRepository<Posts, Long> {
     @Query(value = "select count(post_id) from post_likes where post_id = :postId", nativeQuery = true)
     List<List<Object>> countLikes(@Param("postId") Long postId);
 
-    @Query(value = "SELECT * FROM posts where user_id = :postUserId and id != :postId and not isnull(picture) and created_date > now() - interval 24 hour order by created_date desc limit 4", nativeQuery = true)
-    List<List<Object>> last4(@Param("postUserId") Long postUserId, @Param("postId") Long postId);
+    @Query(value = "SELECT * FROM posts where user_id = :postUserId and picture is not null and created_date < now() - interval 24 hour order by created_date desc limit 4", nativeQuery = true)
+    List<List<Object>> last4(@Param("postUserId") Long postUserId);
 }

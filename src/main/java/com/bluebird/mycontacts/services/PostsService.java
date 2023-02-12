@@ -83,7 +83,7 @@ public class PostsService {
         return ResponseEntity.ok(true);
     }
 
-    public ResponseEntity<List<Posts>> getLastPost(HttpServletRequest request) {
+    public List<Posts> getLastPost(HttpServletRequest request) {
         final String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
         final UserInfo userInfo = userInfoRepository.findByPhone(phone).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
         final List<Posts> list = new ArrayList<>();
@@ -91,10 +91,10 @@ public class PostsService {
             final Posts post = postsRepository.findById(Long.valueOf(String.valueOf(item))).orElse(null);
             list.add(post);
         }
-        return ResponseEntity.ok(list);
+        return list;
     }
 
-    public ResponseEntity<Map<String, Object>> getLike(HttpServletRequest request, Long postId) {
+    public Map<String, Object> getLike(HttpServletRequest request, Long postId) {
         final String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
         final UserInfo userInfo = userInfoRepository.findByPhone(phone).orElse(null);
         final Posts post = postsRepository.findById(postId).orElse(null);
@@ -105,10 +105,10 @@ public class PostsService {
         result.put("count", Long.valueOf(postsRepository.countLikes(postId).get(0).get(0).toString()));
         if (userInfoRepository.check(userInfo.getId(), post.getId()).size() == 0) {
             result.put("like", false);
-            return ResponseEntity.ok(result);
+            return result;
         }
         result.put("like", true);
-        return ResponseEntity.ok(result);
+        return result;
     }
 
     public ResponseEntity<Boolean> setLike(HttpServletRequest request, Long postId) {
@@ -138,13 +138,20 @@ public class PostsService {
         final List<UserModel> users = new ArrayList<>();
         final List<UserLikeModel> userLikeModel = new ArrayList<>();
         final List<PostModel> posts = new ArrayList<>();
-        final List<String> last4Posts = new ArrayList<>();
+        final Map<String,List<String>> last4Posts = new HashMap<>();
 
-        for (Posts e : Objects.requireNonNull(getLastPost(request).getBody())) {
-            for (List<Object> i : postsRepository.last4(e.getUserInfo().getId(), e.getId())) {
-                last4Posts.add(i.get(4).toString());
+        long userID = 0;
+        for (Posts e : getLastPost(request)) {
+            if(userID!=e.getUserInfo().getId()){
+                List<String> picList = new ArrayList<>();
+                for (List<Object> i : postsRepository.last4(e.getUserInfo().getId())) {
+                    picList.add(i.get(4).toString());
+
+                }
+                last4Posts.put(String.valueOf(e.getUserInfo().getId()),picList.size()==4?picList:null);
             }
-            break;
+            userID=e.getUserInfo().getId();
+
         }
 
         for (AvailableContactResult e : Objects.requireNonNull(findService.checker(request).getBody())) {
@@ -153,9 +160,13 @@ public class PostsService {
             users.add(userModel);
         }
 
-        for (Posts e : Objects.requireNonNull(getLastPost(request).getBody())) {
-            final PostModel postModel = new PostModel(e.getId(), e.getPicture(), e.getCaption(), getUserModel(userLikeModel, e.getUserInfo()), last4Posts, AppVariables.PATH + "/api/posts/comments", (boolean) getLike(request, e.getId()).getBody().get("like"));
+        long uId = 0;
+        for (Posts e : Objects.requireNonNull(getLastPost(request))) {
+            final PostModel postModel = new PostModel(e.getId(), e.getPicture(), e.getCaption(), getUserModel(userLikeModel, e.getUserInfo()),
+                    uId!=e.getUserInfo().getId() ?last4Posts.get(String.valueOf(e.getUserInfo().getId())):null,
+                    AppVariables.SERVER_URL + "/api/posts/comments", (boolean) getLike(request, e.getId()).get("like"));
             posts.add(postModel);
+            uId = e.getUserInfo().getId();
         }
 
         return ResponseEntity.ok(new PostResultModel(userInfo.getId(), new PostDataModel(users, posts)));

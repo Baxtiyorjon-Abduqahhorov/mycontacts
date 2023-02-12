@@ -7,7 +7,7 @@ public class PostModel implements Serializable {
 
     private Long post_id;
 
-    private String pro_pic;
+    private String picture;
 
     private String text;
 
@@ -19,14 +19,14 @@ public class PostModel implements Serializable {
 
     private boolean post_liked;
 
-    public PostModel(Long post_id, String pro_pic, String text, UserLikeModel user, List<String> last_four_post_pic, String comments, boolean postLiked) {
+    public PostModel(Long post_id, String picture, String text, UserLikeModel user, List<String> last_four_post_pic, String comments, boolean post_liked) {
         this.post_id = post_id;
-        this.pro_pic = pro_pic;
+        this.picture = picture;
         this.text = text;
         this.user = user;
         this.last_four_post_pic = last_four_post_pic;
         this.comments = comments;
-        this.post_liked = postLiked;
+        this.post_liked = post_liked;
     }
 
     public Long getPost_id() {
@@ -37,12 +37,12 @@ public class PostModel implements Serializable {
         this.post_id = post_id;
     }
 
-    public String getPro_pic() {
-        return pro_pic;
+    public String getPicture() {
+        return picture;
     }
 
-    public void setPro_pic(String pro_pic) {
-        this.pro_pic = pro_pic;
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public String getText() {
