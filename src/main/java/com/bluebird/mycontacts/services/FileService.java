@@ -30,6 +30,7 @@ public class FileService {
     }
 
     public String saveFile(MultipartFile file) throws IOException {
+        System.out.println(AppVariables.PATH);
         final File path = new File(AppVariables.PATH + hashids.encode(new Date().getTime()) + "." + getFileExtension(file.getOriginalFilename()));
         file.transferTo(path);
         return path.getAbsolutePath();
