@@ -61,7 +61,7 @@ public class UserContactsService {
         listContacts.forEach(contactObject -> {
             final UsersContacts usersContacts = new UsersContacts();
             usersContacts.setUserInfo(getUser);
-            usersContacts.setContactNumber(contactObject.getNumber());
+            usersContacts.setContactNumber(cut(contactObject.getNumber()));
             usersContacts.setContactName(contactObject.getName());
             usersContactsListCL.add(usersContacts);
         });
@@ -79,5 +79,8 @@ public class UserContactsService {
 
     }
 
+    private String cut(String number){
+        return number.replaceAll(" ", "");
+    }
 
 }

@@ -47,7 +47,8 @@ public class AuthService {
         this.fileService = fileService;
     }
 
-    public ResponseEntity<LoginResult> register(String phone, String password, String firstname, String lastname, MultipartFile picture, String bio) throws IOException {
+    public ResponseEntity<LoginResult> register(String number, String password, String firstname, String lastname, MultipartFile picture, String bio) throws IOException {
+        String phone = cut(number);
         if (phone.length() != 13 && password.length() < 8) {
             final LoginResult result = new LoginResult(false, "Telefon raqami 13ta belgidan iborat bo'lishi kerak va parol kamida 6ta belgidan iborat bo'lishi kerak.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -96,5 +97,9 @@ public class AuthService {
 
     public ResponseEntity<Boolean> checkUser(String phone) {
         return ResponseEntity.ok(usersRepository.existsByUsername(phone));
+    }
+
+    private String cut(String number){
+        return number.replaceAll(" ", "");
     }
 }
