@@ -45,9 +45,9 @@ public class FileService {
         return filename.substring(lastIndex + 1);
     }
 
-    public String getFileName(String absolutePath){
+    public String getFileName(String absolutePath) {
         int lastIndex = absolutePath.lastIndexOf("/");
-        return absolutePath.substring(lastIndex);
+        return absolutePath.substring(lastIndex + 1);
     }
 
 }

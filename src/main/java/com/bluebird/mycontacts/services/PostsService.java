@@ -51,7 +51,7 @@ public class PostsService {
         posts.setCaption(caption);
         posts.setCreatedDate(now);
         posts.setEditedDate(now);
-        posts.setPicture(file == null ? null : AppVariables.IMAGE_SERVER_URL + fileService.getFileName(fileService.saveFile(file)));
+        posts.setPicture(file == null ? null : fileService.getFileName(fileService.saveFile(file)));
         posts.setUserInfo(user);
         postsRepository.save(posts);
         return ResponseEntity.ok(true);
@@ -138,19 +138,19 @@ public class PostsService {
         final List<UserModel> users = new ArrayList<>();
         final List<UserLikeModel> userLikeModel = new ArrayList<>();
         final List<PostModel> posts = new ArrayList<>();
-        final Map<String,List<String>> last4Posts = new HashMap<>();
+        final Map<String, List<String>> last4Posts = new HashMap<>();
 
         long userID = 0;
         for (Posts e : getLastPost(request)) {
-            if(userID!=e.getUserInfo().getId()){
+            if (userID != e.getUserInfo().getId()) {
                 List<String> picList = new ArrayList<>();
                 for (List<Object> i : postsRepository.last4(e.getUserInfo().getId())) {
                     picList.add(i.get(4).toString());
 
                 }
-                last4Posts.put(String.valueOf(e.getUserInfo().getId()),picList.size()==4?picList:null);
+                last4Posts.put(String.valueOf(e.getUserInfo().getId()), picList.size() == 4 ? picList : null);
             }
-            userID=e.getUserInfo().getId();
+            userID = e.getUserInfo().getId();
 
         }
 
@@ -162,8 +162,8 @@ public class PostsService {
 
         long uId = 0;
         for (Posts e : Objects.requireNonNull(getLastPost(request))) {
-            final PostModel postModel = new PostModel(e.getId(), e.getPicture(), e.getCaption(), getUserModel(userLikeModel, e.getUserInfo()),
-                    uId!=e.getUserInfo().getId() ?last4Posts.get(String.valueOf(e.getUserInfo().getId())):null,
+            final PostModel postModel = new PostModel(e.getId(), AppVariables.IMAGE_SERVER_URL + e.getPicture(), e.getCaption(), getUserModel(userLikeModel, e.getUserInfo()),
+                    uId != e.getUserInfo().getId() ? last4Posts.get(String.valueOf(e.getUserInfo().getId())) : null,
                     AppVariables.SERVER_URL + "/api/posts/comments", (boolean) getLike(request, e.getId()).get("like"));
             posts.add(postModel);
             uId = e.getUserInfo().getId();
@@ -174,7 +174,7 @@ public class PostsService {
 
     public UserLikeModel getUserModel(List<UserLikeModel> list, UserInfo userInfo) {
         for (UserLikeModel u : list) {
-            if (u.getId().equals(userInfo.getId())){
+            if (u.getId().equals(userInfo.getId())) {
                 return u;
             }
         }

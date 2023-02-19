@@ -2,6 +2,7 @@ package com.bluebird.mycontacts.services;
 
 import com.bluebird.mycontacts.entities.UserInfo;
 import com.bluebird.mycontacts.entities.UsersContacts;
+import com.bluebird.mycontacts.extra.AppVariables;
 import com.bluebird.mycontacts.models.ContactObject;
 import com.bluebird.mycontacts.models.ListContacts;
 import com.bluebird.mycontacts.models.RegisterResult;
@@ -33,13 +34,24 @@ public class UserContactsService {
     }
 
     public ResponseEntity<List<UsersContacts>> getAll() {
-        return ResponseEntity.ok(userContactsRepository.findAll());
+        List<UsersContacts> list = userContactsRepository.findAll();
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).getUserInfo().setPro_pic(AppVariables.IMAGE_SERVER_URL + list.get(i).getUserInfo().getPro_pic());
+        }
+        return ResponseEntity.ok(list);
     }
 
     public ResponseEntity<List<UsersContacts>> getByUserId(HttpServletRequest request) {
         String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
         final UserInfo getUser = userInfoRepository.findByPhone(phone).orElse(null);
-        return ResponseEntity.ok(userContactsRepository.findByUserInfo(getUser).orElse(null));
+        List<UsersContacts> list = userContactsRepository.findByUserInfo(getUser).orElse(null);
+        if (list == null) {
+            return ResponseEntity.ok(null);
+        }
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).getUserInfo().setPro_pic(AppVariables.IMAGE_SERVER_URL + list.get(i).getUserInfo().getPro_pic());
+        }
+        return ResponseEntity.ok(list);
     }
 
     public ResponseEntity<RegisterResult> delete(HttpServletRequest request) {
@@ -76,8 +88,5 @@ public class UserContactsService {
         }else{
             return ResponseEntity.ok(new RegisterResult(false, "Kontaktlar saqlanmadi "));
         }
-
     }
-
-
 }

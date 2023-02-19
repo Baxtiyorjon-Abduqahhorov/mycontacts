@@ -24,7 +24,6 @@ public class UserContactsController {
         return userContactsService.getByUserId(request);
     }
 
-
     @PostMapping("/sync")
     public ResponseEntity<RegisterResult> sync(@RequestBody List<ContactObject> listContacts, HttpServletRequest request) {
         return userContactsService.update(listContacts, request);

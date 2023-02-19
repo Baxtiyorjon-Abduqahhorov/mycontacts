@@ -24,7 +24,6 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<LoginResult> register(@RequestParam("phone") String phone, @RequestParam("password") String password, @RequestParam("firstname") String firstName, @RequestParam(value = "lastname", required = false) String lastName, @RequestParam(value = "bio", required = false) String bio, @RequestParam(value = "picture", required = false) MultipartFile proPic) throws IOException {
-        System.out.println(System.getProperty("user.dir").replace("/build/libs",""));
         return authService.register(phone, password, firstName, lastName, proPic, bio);
     }
 

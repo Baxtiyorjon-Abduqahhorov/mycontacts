@@ -48,6 +48,45 @@ public class AuthService {
     }
 
     public ResponseEntity<LoginResult> register(String phone, String password, String firstname, String lastname, MultipartFile picture, String bio) throws IOException {
+        if (checkPassAndUsername(phone.trim(), password.trim(), firstname.trim()) != null) {
+            return checkPassAndUsername(phone.trim(), password.trim(), firstname.trim());
+        }
+        if (usersRepository.existsByUsername(phone.trim())) {
+            final LoginResult result = new LoginResult(false, "Bu foydalanuvchi allaqachon ro'yhatdan o'tgan.", null, null);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        final Users users = new Users();
+        users.setUsername(phone.trim());
+        users.setPassword(passwordEncoder.encode(password.trim()));
+        final Roles roles = rolesRepository.findByName("ROLE_USER").get();
+        users.setRoles(Collections.singleton(roles));
+
+        RegisterResult registerResult = userInfoService.save(firstname.trim(), (lastname != null) ? lastname.trim() : null, picture, phone.trim(), bio).getBody();
+        if (!registerResult.getStatus()) {
+            final LoginResult result = new LoginResult(false, registerResult.getMessage(), null, null);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        usersRepository.save(users);
+        final LoginResult result = login(phone.trim(), password.trim()).getBody();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    public ResponseEntity<LoginResult> login(String phone, String password) {
+        if (checkPassAndUsername(phone.trim(), password.trim(), "RUN") != null) {
+            return checkPassAndUsername(phone.trim(), password.trim(), "RUN");
+        }
+        final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(phone.trim(), password.trim()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        final String token = tokenGenerator.generateToken(authentication);
+        final LoginResult result = new LoginResult(true, "Foydalanuvchi tizimga kirdi.", "Bearer", token);
+        return ResponseEntity.ok(result);
+    }
+
+    public ResponseEntity<Boolean> checkUser(String phone) {
+        return ResponseEntity.ok(usersRepository.existsByUsername(phone.trim()));
+    }
+
+    ResponseEntity<LoginResult> checkPassAndUsername(String phone, String password, String firstname) {
         if (phone.length() != 13 && password.length() < 8) {
             final LoginResult result = new LoginResult(false, "Telefon raqami 13ta belgidan iborat bo'lishi kerak va parol kamida 6ta belgidan iborat bo'lishi kerak.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -56,7 +95,7 @@ public class AuthService {
             final LoginResult result = new LoginResult(false, "Telefon raqami 13ta belgidan iborat bo'lishi kerak.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
-        if (password.length() < 8) {
+        if (password.length() < 8 && !stringIsOnlyContainSpace(password)) {
             final LoginResult result = new LoginResult(false, "Parol kamida 8ta belgidan iborat bo'lishi kerak.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
@@ -64,37 +103,14 @@ public class AuthService {
             final LoginResult result = new LoginResult(false, "Telefon raqamida faqat '+' va raqamlar ishtirok etishi shart.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
-        if (usersRepository.existsByUsername(phone)) {
-            final LoginResult result = new LoginResult(false, "Bu foydalanuvchi allaqachon ro'yhatdan o'tgan.", null, null);
+        if (stringIsOnlyContainSpace(firstname)) {
+            final LoginResult result = new LoginResult(false, "Ism noto'g'ri formatda kiritildi.", null, null);
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
-        final Users users = new Users();
-        users.setUsername(phone);
-        users.setPassword(passwordEncoder.encode(password));
-        final Roles roles = rolesRepository.findByName("ROLE_USER").get();
-        users.setRoles(Collections.singleton(roles));
-
-
-
-        RegisterResult registerResult = userInfoService.save(firstname, lastname, picture, phone, bio).getBody();
-        if (!registerResult.getStatus()) {
-            final LoginResult result = new LoginResult(false, registerResult.getMessage(), null, null);
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        }
-        usersRepository.save(users);
-        final LoginResult result = login(phone, password).getBody();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return null;
     }
 
-    public ResponseEntity<LoginResult> login(String phone, String password) {
-        final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(phone, password));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String token = tokenGenerator.generateToken(authentication);
-        final LoginResult result = new LoginResult(true, "Foydalanuvchi tizimga kirdi.", "Bearer", token);
-        return ResponseEntity.ok(result);
-    }
-
-    public ResponseEntity<Boolean> checkUser(String phone) {
-        return ResponseEntity.ok(usersRepository.existsByUsername(phone));
+    boolean stringIsOnlyContainSpace(String str) {
+        return str.trim().isEmpty();
     }
 }

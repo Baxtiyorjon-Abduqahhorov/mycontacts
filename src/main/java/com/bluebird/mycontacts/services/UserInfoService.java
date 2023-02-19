@@ -1,6 +1,5 @@
 package com.bluebird.mycontacts.services;
 
-import com.bluebird.mycontacts.entities.Posts;
 import com.bluebird.mycontacts.entities.UserInfo;
 import com.bluebird.mycontacts.extra.AppVariables;
 import com.bluebird.mycontacts.models.RegisterResult;
@@ -64,7 +63,7 @@ public class UserInfoService {
         userInfoResult.setBio(userInfo.getBio());
         userInfoResult.setPhone(userInfo.getPhone());
         userInfoResult.setLast_name(userInfo.getLast_name());
-        userInfoResult.setPicture(userInfo.getPro_pic());
+        userInfoResult.setPicture(AppVariables.IMAGE_SERVER_URL + userInfo.getPro_pic());
         return ResponseEntity.ok(userInfoResult);
     }
 
@@ -72,7 +71,7 @@ public class UserInfoService {
         final UserInfo userInfo = new UserInfo();
         userInfo.setFirst_name(firstName);
         userInfo.setLast_name(lastName);
-        userInfo.setPro_pic(proPic == null ? null : AppVariables.IMAGE_SERVER_URL + fileService.getFileName(fileService.saveFile(proPic)));
+        userInfo.setPro_pic(proPic == null ? null : fileService.getFileName(fileService.saveFile(proPic)));
         userInfo.setPhone(phone);
         userInfo.setBio(bio);
 
@@ -84,9 +83,9 @@ public class UserInfoService {
         String phone = tokenGenerator.getUsernameFromToken(tokenGenerator.getTokenFromRequest(request));
         final UserInfo userInfo = userInfoRepository.findByPhone(phone).orElse(null);
         userInfo.setId(userInfo.getId());
-        userInfo.setFirst_name(firstName);
-        userInfo.setLast_name(lastName);
-        userInfo.setPro_pic(proPic == null ? userInfo.getPro_pic() : fileService.saveFile(proPic));
+        userInfo.setFirst_name(firstName.trim());
+        userInfo.setLast_name(lastName != null ? lastName.trim() : null);
+        userInfo.setPro_pic(proPic == null ? userInfo.getPro_pic() : fileService.getFileName(fileService.saveFile(proPic)));
         userInfo.setPhone(userInfo.getPhone());
         userInfo.setBio(bio);
         userInfoRepository.save(userInfo);
