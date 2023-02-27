@@ -39,6 +39,6 @@ public class TokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         AntPathMatcher antPathMatcher = new AntPathMatcher();
-    return new AntPathMatcher().match("/api/auth/**", request.getServletPath()) || new AntPathMatcher().match("/api/info/picture/**", request.getServletPath());
+    return new AntPathMatcher().match("/api/auth/**", request.getServletPath()) || new AntPathMatcher().match("/api/info/picture/**", request.getServletPath()) ||new AntPathMatcher().match("/api/info/hello/**", request.getServletPath());
     }
 }

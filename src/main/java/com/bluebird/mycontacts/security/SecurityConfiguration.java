@@ -27,7 +27,9 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/info/getAll", "/api/info/delete", "/api/contacts/getAll", "/api/contacts/delete").hasRole("ADMIN")
-                .antMatchers("/api/auth/**","/api/info/picture/**").permitAll()
+                .antMatchers("/api/auth/**","/api/info/picture/**", "/api/info/hello/**")
+
+                .permitAll()
 
                 .anyRequest().authenticated()
                 .and()
