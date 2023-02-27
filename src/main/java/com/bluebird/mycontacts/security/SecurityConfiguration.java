@@ -29,7 +29,6 @@ public class SecurityConfiguration {
                 .antMatchers("/api/info/getAll", "/api/info/delete", "/api/contacts/getAll", "/api/contacts/delete").hasRole("ADMIN")
                 .antMatchers("/api/auth/**","/api/info/picture/**", "/api/info/hello/**")
                 .permitAll()
-//asdasd
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()
