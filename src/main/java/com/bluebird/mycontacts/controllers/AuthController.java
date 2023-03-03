@@ -36,4 +36,9 @@ public class AuthController {
     public ResponseEntity<Boolean> checkUser(@RequestParam("phone") String phone) {
         return authService.checkUser(phone);
     }
+
+    @GetMapping("student")
+    public ResponseEntity<String> studet(){
+        return ResponseEntity.ok("Hello Cloud");
+    }
 }
